@@ -54,6 +54,11 @@ int* generate_perm(int N){
 
   perm = (int*)malloc(N*sizeof(perm[0]));
   
+  if(perm == NULL){
+    free(perm);
+    return NULL;
+  }
+
   for(i=0;i<N;i++){
     perm[i] = i+1;
   }
@@ -63,7 +68,6 @@ int* generate_perm(int N){
     aux=perm[i];
     perm[i]=perm[r];
     perm[r]=aux;
-
   }
 
   return perm;
@@ -90,8 +94,14 @@ int** generate_permutations(int n_perms, int N) {
 
   perm = (int**)malloc(N*sizeof(perm[0])); 
 
- for(i=0; i<n_perms; i++){
-   perm[i]=generate_perm(N);
- }
+  if(perm == NULL){
+    free(perm);
+    return NULL;
+  }
+
+  for(i=0; i<n_perms; i++){
+    perm[i]=generate_perm(N);
+  }
+
   return perm;
 }

@@ -25,6 +25,12 @@ short average_sorting_time(pfunc_sort metodo, int n_perms, int N, PTIME_AA ptime
   int i, minob = INT_MAX, maxob = INT_MIN, ob, num_ob=0;
   int** perms = generate_permutations(n_perms, N);
   clock_t start, end, total;
+
+  if (perms == NULL){
+    free(perms);
+    return ERR;
+  }
+  
   start = clock();
   for(i=0; i<n_perms; i++){
     ob = metodo(perms[i], 0, N-1);
