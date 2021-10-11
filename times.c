@@ -11,10 +11,11 @@
 
 #include "times.h"
 #include "sorting.h"
-#include "permutations.c"
+#include "permutations.h"
 #include <time.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <stdio.h>
 
 /***************************************************/
 /* Function: average_sorting_time Date:            */
@@ -44,6 +45,12 @@ short average_sorting_time(pfunc_sort metodo, int n_perms, int N, PTIME_AA ptime
   }
   end = clock();
   total = (double)(end-start)/CLOCKS_PER_SEC;
+
+  for(i=0;i<n_perms;i++){
+    free(perms[i]);
+  }
+  free(perms);
+
 
   ptime->max_ob = maxob;
   ptime->min_ob = minob;

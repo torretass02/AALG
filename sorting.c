@@ -33,7 +33,20 @@ int BubbleSort(int* array, int ip, int iu) {
 }
 
 int BubbleSortFlag(int* array, int ip, int iu) {
-  /* your code */
+  int i, j;
+
+  if(!array || ip<0 || iu<0){
+    return ERR;
+  }
+
+
+  for(i=iu;i>ip;i--){
+    for(j=ip;j<iu;j++){
+      if(array[j]>array[j+1]){
+        swap(&array[j], &array[j+1]);
+      }
+    }
+  }
 }
 
 void swap(int *xp, int *yp) {

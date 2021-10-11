@@ -10,12 +10,11 @@
  */
 
 
-#include "permutations.h"
 #include <stdlib.h>
 #include <stddef.h>
-/*#define NDEBUG*/
 #include <assert.h>
-
+#include "permutations.h"
+/*#define NDEBUG*/
 
 /***************************************************/
 /* Function: random_num Date:                      */
@@ -54,10 +53,10 @@ int* generate_perm(int N){
 
   perm = (int*)malloc(N*sizeof(perm[0]));
   
-  if(perm == NULL){
+  /*if(perm == NULL){
     free(perm);
     return NULL;
-  }
+  }*/
 
   for(i=0;i<N;i++){
     perm[i] = i+1;
@@ -94,10 +93,10 @@ int** generate_permutations(int n_perms, int N) {
 
   perm = (int**)malloc(N*sizeof(perm[0])); 
 
-  if(perm == NULL){
+  /*if(perm == NULL){
     free(perm);
     return NULL;
-  }
+  }*/
 
   for(i=0; i<n_perms; i++){
     perm[i]=generate_perm(N);
