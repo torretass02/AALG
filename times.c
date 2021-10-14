@@ -23,53 +23,55 @@
 /* Your documentation                              */
 /***************************************************/
 short average_sorting_time(pfunc_sort metodo, int n_perms, int N, PTIME_AA ptime){
-  int i, minob = INT_MAX, maxob = INT_MIN, ob, num_ob=0;
-  int** perms = generate_permutations(n_perms, N);
-  clock_t start, end, total;
+  clock_t start_t, end_t, total_t;
+  int i, minob, maxob, ob, totalob=0;
+  int** perms=NULL;
 
-  if (perms == NULL){
-    free(perms);
+  if(!metodo||n_perms<=0||N<=0||!ptime)
     return ERR;
-  }
-  
-  start = clock();
-  for(i=0; i<n_perms; i++){
-    ob = metodo(perms[i], 0, N-1);
-    if(ob<minob){
-      minob = ob;
+
+  perms=generate_permutations(n_perms,N);
+    if(perms==NULL){
+      return ERR;
     }
-    else if(ob>maxob){
-      maxob = ob;
-    }
-    num_ob+=ob;
+
+  maxob=INT_MIN;
+  minob=INT_MAX;
+
+  start_t=clock();
+
+  for(i=0;i<n_perms;i++){
+    ob=metodo(perms[i],0,N-1);
+    if(ob<minob) minob=ob;
+    if(ob>maxob) maxob=ob;
+    totalob+=ob;
   }
-  end = clock();
-  total = (double)(end-start)/CLOCKS_PER_SEC;
+
+  end_t=clock();
+
+  total_t=(double)(end_t-start_t)/n_perms;
+
+  ptime->N=N;
+  ptime->n_elems=n_perms;
+  ptime->time=total_t;
+  ptime->average_ob=(double)(totalob/n_perms);
+  ptime->min_ob=minob;
+  ptime->max_ob=maxob;
 
   for(i=0;i<n_perms;i++){
     free(perms[i]);
   }
   free(perms);
 
-  ptime->max_ob = maxob;
-  ptime->min_ob = minob;
-  ptime->N = N;
-  ptime->n_elems = n_perms;
-  ptime->time = total;
-  ptime->average_ob = num_ob/n_perms;
   return OK;
 }
 
-/***************************************************/
-/* Function: generate_sorting_times Date:          */
-/*                                                 */
-/* Your documentation                              */
-/***************************************************/
+
 short generate_sorting_times(pfunc_sort method, char* file, int num_min, int num_max, int incr, int n_perms){
   TIME_AA *time=NULL;
   int i,aux,tam;
 
-  if(!method||!file||num_min<=0||num_max<=0||incr<=0||n_perms<=0)
+  if(!method||!file)
     return ERR;
 
   aux=(num_max-num_min)/incr+1;
@@ -79,7 +81,6 @@ short generate_sorting_times(pfunc_sort method, char* file, int num_min, int num
 
   for(i=0,tam=num_min;i<aux;i++,tam+=incr){
     if(average_sorting_time(method,n_perms,tam,&time[i])==ERR){
-      free(time);
       return ERR;
     }
   }
@@ -93,25 +94,20 @@ short generate_sorting_times(pfunc_sort method, char* file, int num_min, int num
   return OK;
 }
 
-/***************************************************/
-/* Function: save_time_table Date:                 */
-/*                                                 */
-/* Your documentation                              */
-/***************************************************/
+
 short save_time_table(char* file, PTIME_AA ptime, int n_times){
   FILE *f=NULL;
   int i;
 
-  if(!file||!ptime)
+  if(!file)
     return ERR;
 
   f=fopen(file,"w");
-  if(f==NULL){
+  if(f==NULL)
    return ERR;
-  }
 
   for(i=0;i<n_times;i++){
-    fprintf(f,"%d | %f | %f | %d | %d\n",ptime[i].N, ptime[i].time, ptime[i].average_ob, ptime[i].max_ob, ptime[i].min_ob);
+    fprintf(f," %d  %f  %f  %d  %d\n",ptime[i].N,ptime[i].time,ptime[i].average_ob,ptime[i].max_ob,ptime[i].min_ob);
   }
 
   fclose(f);
