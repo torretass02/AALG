@@ -52,6 +52,8 @@ int* generate_perm(int N){
   int i, aux, r;
   int *perm = NULL;
 
+  assert(N>=0);
+
   perm = (int*)malloc(N*sizeof(int));
   
   if(perm == NULL){
@@ -92,10 +94,12 @@ int** generate_permutations(int n_perms, int N) {
   int i, j;
   int** perm = NULL;
 
+  assert(n_perms>=0);
+  assert(N>=0);
+
   perm = (int**)malloc(n_perms*sizeof(int*)); 
 
   if(perm == NULL){
-    free(perm);
     return NULL;
   }
 

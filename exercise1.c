@@ -16,7 +16,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <assert.h>
 #include "permutations.h"
+
 
 int main(int argc, char** argv)
 {
@@ -35,8 +37,8 @@ int main(int argc, char** argv)
     exit(-1);
   }
   printf("Practice no 1, Section 1\n");
-  printf("Done by: Your names\n");
-  printf("Grupo: Your group\n");
+  printf("Done by: Hugo Torres y Luis Rodríguez\n");
+  printf("Grupo: 1261\n");
 
   /* check command line */
   for(i = 1; i < argc; i++) {
