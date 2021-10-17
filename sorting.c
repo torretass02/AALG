@@ -29,7 +29,7 @@ void swap(int *xp, int *yp) {
 int BubbleSort(int* array, int ip, int iu) {
   int i, j, ob;
 
-  assert(ip>0 || iu>0);
+  assert(ip>=0||iu>=0);
 
   ob=0;
   for(i=iu;i>ip;i--){
@@ -44,22 +44,21 @@ int BubbleSort(int* array, int ip, int iu) {
 }
 
 int BubbleSortFlag(int* array, int ip, int iu) {
-  int i=iu, j, flag = 1, ob;
+  int i, comps, sorted = 0, ob = 0;	
+	comps = (iu-1) - 1;
 
-  assert(ip>0 || iu>0);
+  assert(ip>=0||iu>=0);
 
-  ob=0;
-
-  while(flag==1 && i>=ip+1){
-    flag = 0;
-    for(j=ip;j<iu;j++){
-      if(array[j]>array[j+1]){
-        swap(&array[j], &array[j+1]);
-        flag=1;
-      }
+	while ( !sorted ){
+		sorted = 1;	
+		for(i = ip;i < comps;i++){
+			if(array[i] > array[i + 1]){
+        swap(&array[i], &array[i+1]);
+				sorted = 0;
+			}
       ob++;
-    }
-    i--;
-  }
+		}	
+		comps--;
+	}
   return ob;
 }
