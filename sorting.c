@@ -13,6 +13,7 @@
 #include "sorting.h"
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 /*#define NDEBUG*/
 
 
@@ -64,7 +65,7 @@ int BubbleSortFlag(int* array, int ip, int iu) {
   return ob;
 }
 
-int mergesort(int* tabla, int ip, int iu){
+int MergeSort(int* tabla, int ip, int iu){
  int m,ob,ob_aux,ob_aux2;
 
   if(!tabla||ip<0||iu<0||ip>iu){
@@ -78,13 +79,13 @@ int mergesort(int* tabla, int ip, int iu){
   m=(ip+iu)/2;
   
   ob=1;
-  ob+=mergesort(tabla,ip,m);
+  ob+=MergeSort(tabla,ip,m);
   if(ob==NULL){
     return ERR;
   }
 
   ob_aux=1;
-  ob_aux+=mergesort(tabla,m+1,iu);
+  ob_aux+=MergeSort(tabla,m+1,iu);
   if(ob_aux==NULL){
     return ERR;
   }
@@ -147,4 +148,45 @@ int merge(int* tabla, int ip, int iu, int imedio){
   copy(tablaaux, tabla, ip, iu);
   free(tablaaux);
   return ob;
+}
+
+int quicksort(int* tabla, int ip, int iu){
+  
+  int M;
+  
+  if(ip<iu) return ERR;
+  if(ip == iu) return OK;
+  else{
+    M = partition(tabla, ip, iu);
+    if(ip<M-1){
+      quicksort(tabla, ip, M-1);
+    }
+    if(M+1<iu){
+      quicksort(tabla, M+1, iu);
+    }
+  }
+  return OK;
+}
+
+int partition(int* tabla, int ip, int iu){
+  int M, k,i;
+  int* pos;
+  M= median(tabla, ip, iu, pos);
+  k = tabla[M];
+  swap(&tabla[ip], &tabla[M]);
+  M = ip;
+
+  for(i=0; ip+1<iu; i++){
+    if(tabla[i]<k){
+      M++;
+      swap(&tabla[i],  &tabla[M]);
+    }
+  }
+  swap(&tabla[ip], &tabla[M]);
+  return M;
+}
+
+int median(int *tabla, int ip, int iu,int *pos){
+
+
 }
