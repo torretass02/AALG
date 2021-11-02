@@ -80,21 +80,21 @@ int MergeSort(int* tabla, int ip, int iu){
   
   ob=1;
   ob+=MergeSort(tabla,ip,m);
-  if(ob==NULL){
+  /*if(ob==NULL){
     return ERR;
-  }
+  }*/
 
   ob_aux=1;
   ob_aux+=MergeSort(tabla,m+1,iu);
-  if(ob_aux==NULL){
+  /*if(ob_aux==NULL){
     return ERR;
-  }
+  }*/
 
   ob_aux2=1;
   ob_aux2+= merge(tabla,ip,iu,m);
-  if(ob_aux2==NULL){
+  /*if(ob_aux2==NULL){
     return ERR;
-  }
+  }*/
 
   return ob+ob_aux+ob_aux2;
 }
@@ -152,41 +152,44 @@ int merge(int* tabla, int ip, int iu, int imedio){
 
 int quicksort(int* tabla, int ip, int iu){
   
-  int M;
+  int M, pos, ob=0;
   
-  if(ip<iu) return ERR;
   if(ip == iu) return OK;
   else{
-    M = partition(tabla, ip, iu);
-    if(ip<M-1){
-      quicksort(tabla, ip, M-1);
+    M = partition(tabla, ip, iu, &pos);
+    ob+=M;
+    if(ip<pos-1){
+      M = quicksort(tabla, ip, pos-1);
+      ob+=M;
     }
-    if(M+1<iu){
-      quicksort(tabla, M+1, iu);
+    if(pos+1<iu){
+      M = quicksort(tabla, pos+1, iu);
+      ob+=M;
     }
   }
-  return OK;
+  return ob;
 }
 
-int partition(int* tabla, int ip, int iu){
-  int M, k,i;
-  int* pos;
+int partition(int* tabla, int ip, int iu, int *pos){
+  int M, k, i, ob=0;
   M= median(tabla, ip, iu, pos);
-  k = tabla[M];
-  swap(&tabla[ip], &tabla[M]);
-  M = ip;
+  ob+=M;
+  k = tabla[*pos];
+  swap(&tabla[ip], &tabla[*pos]);
+  *pos = ip;
 
-  for(i=0; ip+1<iu; i++){
+  for(i=ip+1; i<=iu; i++){
+    ob++;
     if(tabla[i]<k){
-      M++;
-      swap(&tabla[i],  &tabla[M]);
+      (*pos)++;
+      swap(&tabla[i],  &tabla[*pos]);
     }
   }
-  swap(&tabla[ip], &tabla[M]);
-  return M;
+  swap(&tabla[ip], &tabla[*pos]);
+  return ob;
 }
 
 int median(int *tabla, int ip, int iu,int *pos){
-
-
+  *pos=(ip+iu)/2;
+  return 0;
 }
