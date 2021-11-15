@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     fprintf(stderr, " -size : number of elements in the permutation.\n");
     return 0;
   }
-  printf("Practice number 1, section 4\n");
+  printf("Practice number 2, section 4\n");
   printf("Done by: Hugo Torres y Luis Rodríguez\n");
   printf("Group: 1261\n");
 

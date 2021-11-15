@@ -31,5 +31,6 @@ int merge(int* tabla, int ip, int iu, int imedio);
 int quicksort(int* tabla, int ip, int iu);
 int partition(int* tabla, int ip, int iu, int *pos);
 int median(int *tabla, int ip, int iu,int *pos);
+int quicksort_src(int* tabla, int ip, int iu);
 
 #endif

@@ -66,37 +66,22 @@ int BubbleSortFlag(int* array, int ip, int iu) {
 }
 
 int MergeSort(int* tabla, int ip, int iu){
- int m,ob,ob_aux,ob_aux2;
+ int m,ob;
 
-  if(!tabla||ip<0||iu<0||ip>iu){
-    return ERR;
-  }
+  assert(ip>=0||iu>=0||ip<iu);
 
-  if(ip==iu){
-    return 0;
-  }
+  if(ip==iu) return 0;
 
   m=(ip+iu)/2;
   
-  ob=1;
+  ob=0;
   ob+=MergeSort(tabla,ip,m);
-  /*if(ob==NULL){
-    return ERR;
-  }*/
 
-  ob_aux=1;
-  ob_aux+=MergeSort(tabla,m+1,iu);
-  /*if(ob_aux==NULL){
-    return ERR;
-  }*/
+  ob+=MergeSort(tabla,m+1,iu);
 
-  ob_aux2=1;
-  ob_aux2+= merge(tabla,ip,iu,m);
-  /*if(ob_aux2==NULL){
-    return ERR;
-  }*/
+  ob+= merge(tabla,ip,iu,m);
 
-  return ob+ob_aux+ob_aux2;
+  return ob;
 }
 
 void copy(int* aux, int* t, int p, int u){
@@ -111,6 +96,9 @@ void copy(int* aux, int* t, int p, int u){
 int merge(int* tabla, int ip, int iu, int imedio){
   int* tablaaux = NULL;
   int i, j, k, ob=0;
+
+  assert(ip>=0||iu>=0||ip<iu||imedio>=0);
+
   i = ip;
   j = imedio+1;
 
@@ -151,10 +139,13 @@ int merge(int* tabla, int ip, int iu, int imedio){
 }
 
 int quicksort(int* tabla, int ip, int iu){
-  
+
   int M, pos, ob=0;
   
+  assert(ip>=0||iu>=0);
+  
   if(ip == iu) return OK;
+  
   else{
     M = partition(tabla, ip, iu, &pos);
     ob+=M;
@@ -171,11 +162,19 @@ int quicksort(int* tabla, int ip, int iu){
 }
 
 int partition(int* tabla, int ip, int iu, int *pos){
+
   int M, k, i, ob=0;
+
+  assert(ip>=0||iu>=0);
+
   M= median(tabla, ip, iu, pos);
+
   ob+=M;
+
   k = tabla[*pos];
+
   swap(&tabla[ip], &tabla[*pos]);
+
   *pos = ip;
 
   for(i=ip+1; i<=iu; i++){
@@ -190,6 +189,50 @@ int partition(int* tabla, int ip, int iu, int *pos){
 }
 
 int median(int *tabla, int ip, int iu,int *pos){
+
+  assert(ip>=0||iu>=0);
+
   *pos=(ip+iu)/2;
   return 0;
+}
+
+int quicksort_src(int* tabla, int ip, int iu){
+  int* p=NULL;
+  int pos, a, ob;
+  
+  a = 0;
+  pos = 0;
+  ob = 0;
+  assert(ip>=0||iu>=0||ip<iu);
+
+  p = (int*)malloc((iu+2)*sizeof(int));
+
+  if(p==NULL) return ERR;
+
+  p[a]=ip;
+  a++;
+  p[a]=iu;
+
+  while(a>=0){
+    iu=p[a];
+    a--;
+    ip=p[a];
+    a--;
+    ob+=partition(tabla,ip,iu,&pos);
+    if(ip<pos-1){
+      a++;
+      p[a]=ip;
+      a++;
+      p[a]=pos-1;
+    }
+    if(pos+1<iu){
+      a++;
+      p[a]=pos+1;
+      a++;
+      p[a]=iu;
+    }
+  }
+
+  free(p);
+  return ob;
 }

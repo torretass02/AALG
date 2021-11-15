@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     exit(-1);
   }
 
-  printf("Practice number 1, section 5\n");
+  printf("Practice number 2, section 5\n");
   printf("Done by: Hugo Torres y Luis Rodríguez\n");
   printf("Group: 1261\n");
   
