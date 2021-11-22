@@ -36,6 +36,6 @@ typedef struct time_aa {
 short average_sorting_time(pfunc_sort method, int n_perms,int N, PTIME_AA ptime);
 short generate_sorting_times(pfunc_sort method, char* file, int num_min, int num_max, int incr, int n_perms);
 short save_time_table(char* file, PTIME_AA time, int n_times);
-short average_search_time(pfunc_busqueda method, pfunc_key_generator generator, char order, int N, int n_times, PTIME_AA ptime);
-
+/*short average_search_time(pfunc_busqueda method, pfunc_key_generator generator, char order, int N, int n_times, PTIME_AA ptime);
+*/
 #endif
