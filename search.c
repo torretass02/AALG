@@ -10,7 +10,7 @@
  */
 
 #include "search.h"
-
+#include "sorting.h"
 #include <stdlib.h>
 #include <math.h>
 
@@ -126,11 +126,17 @@ int bin_search(int *table,int F,int L,int key, int *ppos){
 }
 
 int lin_search(int *table,int F,int L,int key, int *ppos){
-	
+  int i, ob;
+	for(i=F; i<L; i++){
+    ob++;
+    if(table[i]=key){
+      *ppos = F;
+      return ob;
+    }
+  }
+  return NOT_FOUND;
 }
 
 int lin_auto_search(int *table,int F,int L,int key, int *ppos){
-	
+
 }
-
-
