@@ -16,6 +16,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <assert.h>
+#include "search.h"
 /*#define NDEBUG*/
 
 
@@ -24,49 +25,52 @@
 /*                                                 */
 /* Your documentation                              */
 /***************************************************/
-short average_sorting_time(pfunc_sort metodo, int n_perms, int N, PTIME_AA ptime) {
-  int i, **perms, *ob, totalob;
-  clock_t start, end;  
 
-  perms=generate_permutations(n_perms,N);
+short average_search_time(pfunc_search method, pfunc_key_generator generator, char order, int N, int n_times, PTIME_AA ptime){
+  int i, min_ob, max_ob, ob=0, search, pos;
+  PDICT dictionary;
+  int *perm=NULL, *table = NULL;
 
-  ob=(int*) malloc(n_perms*sizeof(int));
-  if(!ob){
-    return ERR;
-  }
+  clock_t start, end;
+
+  ptime->n_elems=(N*n_times);
+  ptime->N=N;
+
+  dictionary = init_dictionary(N, order);
+
+  perm = generate_perm(N);
+
+  table = (int*) malloc((N*n_times)*sizeof(int));
+
+  massive_insertion_dictionary(dictionary, perm, N);
+
+  generator(table, N*n_times, N);
 
   start=clock();
-
-  for(i=0;i<n_perms;i++){
-    ob[i]=metodo(perms[i],0,N-1);
+  min_ob=INT_MAX;
+  max_ob=0;
+  for(i=0; i<n_times; i++){
+    search=search_dictionary(dictionary, table[i], &pos, method);
+    if(search<min_ob) min_ob=search;
+    else if(search>max_ob) max_ob=search;
+    ob+=search;
   }
+
   end=clock();
 
-  ptime->min_ob=ob[0];
-  ptime->max_ob=ob[0];
+  ptime->max_ob = max_ob;
+  ptime->min_ob = min_ob;
+  ptime->average_ob=(double) ob/ptime->n_elems;
+  ptime->time = (double) (end-start)/N/n_times/CLOCKS_PER_SEC;
 
-  for(i=totalob=0;i<n_perms;i++){
-    if(ptime->min_ob<ob[i]) ptime->min_ob=ob[i];
-    if(ptime->max_ob>ob[i]) ptime->max_ob=ob[i];
-    totalob+=ob[i];
-  }
+  free_dictionary(dictionary);
+  free(perm);
+  free(table);
 
-  ptime->N=N;
-  ptime->n_elems=n_perms;
-  ptime->time = (double) (end-start)/n_perms/CLOCKS_PER_SEC;
-  ptime->average_ob=(double) totalob/n_perms;
-
-  free(ob);
-  
-  for(i=0;i<n_perms;i++){
-    free(perms[i]);
-  }
-
-  free(perms);
   return OK;
 }
 
-short generate_sorting_times(pfunc_sort method, char* file, int num_min, int num_max, int incr, int n_perms){
+short generate_search_times(pfunc_search method, pfunc_key_generator generator, int order, char* file, int num_min, int num_max, int incr, int n_times){
   TIME_AA *time=NULL;
   int i,aux,t;
 
@@ -81,7 +85,7 @@ short generate_sorting_times(pfunc_sort method, char* file, int num_min, int num
   time=(TIME_AA*)malloc((aux)*sizeof(TIME_AA));
 
   for(i=0,t=num_min;i<aux;i++,t+=incr){
-    if(average_sorting_time(method,n_perms,t,&time[i])==ERR){
+    if(average_search_time(method, generator, order, t, n_times, &time[i])==ERR){
       return ERR;
     }
   }
@@ -95,8 +99,8 @@ short generate_sorting_times(pfunc_sort method, char* file, int num_min, int num
   return OK;
 }
 
-short save_time_table(char* file, PTIME_AA ptime, int n_times){
-  FILE *f=NULL;
+short save_time_table(char* file, PTIME_AA time, int N){
+FILE *f=NULL;
   int i;
 
   f=fopen(file,"w");
@@ -104,8 +108,8 @@ short save_time_table(char* file, PTIME_AA ptime, int n_times){
     return ERR;
   }
 
-  for(i=0;i<n_times;i++){
-   fprintf(f, " %d  %f  %f  %d  %d\n",ptime[i].N, ptime[i].time,ptime[i].average_ob,ptime[i].max_ob,ptime[i].min_ob);
+  for(i=0; i<N; i++){
+   fprintf(f, " %d  %f  %d  %f  %d\n",time[i].N, time[i].time,time[i].max_ob, time[i].average_ob, time[i].min_ob);
   }
 
   fclose(f);
