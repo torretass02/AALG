@@ -13,6 +13,8 @@
 #include "sorting.h"
 #include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
+#include <assert.h>
 
 /**
  *  Key generation functions
@@ -55,9 +57,22 @@ void potential_key_generator(int *keys, int n_keys, int max){
 }
 
 PDICT init_dictionary (int size, char order){
+
 	PDICT dictionary = NULL;
+
+  /*assert(size >= 0);
+
+  if(!order) return NULL;*/
+
   dictionary  = (PDICT)malloc(sizeof(DICT));
+  if(!dictionary) return NULL;
+
   dictionary->table = (int*)malloc(size*sizeof(int));
+  if(!dictionary->table){
+    free_dictionary(dictionary);
+    return NULL;
+  }
+
   dictionary->n_data=0;
   dictionary->order=order;
   dictionary->size=size;
@@ -66,12 +81,20 @@ PDICT init_dictionary (int size, char order){
 }
 
 void free_dictionary(PDICT pdict){
+  if(!pdict) return;
+
 	free(pdict->table);
   free(pdict);
+  
 }
 
 int insert_dictionary(PDICT pdict, int key){
   int j, A, ob=0;
+
+  if(!pdict) return ERR;
+
+  assert(pdict->size != pdict->n_data);
+
 	if(pdict->order == NOT_SORTED){
     pdict->table[pdict->n_data] = key;
     pdict->n_data++;
@@ -93,21 +116,31 @@ int insert_dictionary(PDICT pdict, int key){
 
 int massive_insertion_dictionary (PDICT pdict,int *keys, int n_keys){
 	int i, ob=0;
+
+  if(!pdict || !keys || !n_keys) return ERR;
+  
   for(i=0; i<n_keys; i++){
     ob += insert_dictionary(pdict, keys[i]);
+    assert (ob != ERR);
   }
   return ob;
 }
 
 int search_dictionary(PDICT pdict, int key, int *ppos, pfunc_search method){
-  int ob=0;
-	ob=method(pdict->table, 0, pdict->size, key, ppos);
-  return ob;
+
+  if(!pdict || !ppos || !method) return ERR;
+
+  return method(pdict->table, 0, pdict->size, key, ppos);
 }
 
 
 int bin_search(int *table,int F,int L,int key, int *ppos){
   int m, ob=0;
+
+  assert(F >= 0);
+
+  if (!table || !ppos) return ERR;
+
 	while(F<=L){
     m=(F+L)/2;
     ob++;
@@ -122,11 +155,18 @@ int bin_search(int *table,int F,int L,int key, int *ppos){
       F=m+1;
     }
   }
+  *ppos = NOT_FOUND;
   return ob;
 }
 
 int lin_search(int *table,int F,int L,int key, int *ppos){
   int i, ob=0;
+
+  assert(F >= 0);
+
+  if(!table || !ppos) return ERR;
+
+
 	for(i=F; i<L; i++){
     ob++;
     if(table[i]==key){
@@ -134,12 +174,17 @@ int lin_search(int *table,int F,int L,int key, int *ppos){
       return ob;
     }
   }
-
-  return NOT_FOUND;
+  *ppos = NOT_FOUND;
+  return ob;
 }
 
 int lin_auto_search(int *table,int F,int L,int key, int *ppos){
   int i, ob=0;
+
+  assert(F >= 0);
+
+  if(!table || !ppos) return ERR;
+
   for(i=F; i<=L; i++){
     ob++;
     if(table[i]==key){
@@ -154,6 +199,6 @@ int lin_auto_search(int *table,int F,int L,int key, int *ppos){
       }
     }
   }
-
+  *ppos = NOT_FOUND;
   return NOT_FOUND;
 }

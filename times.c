@@ -30,38 +30,74 @@ short average_search_time(pfunc_search method, pfunc_key_generator generator, ch
   int i, min_ob, max_ob, ob=0, search, pos;
   PDICT dictionary;
   int *perm=NULL, *table = NULL;
-
   clock_t start, end;
 
-  ptime->n_elems=(N*n_times);
-  ptime->N=N;
+  if(!method || !generator) return ERR;
 
   dictionary = init_dictionary(N, order);
+  if(!dictionary) return ERR;
 
   perm = generate_perm(N);
+  if(!perm){
+    free_dictionary(dictionary);
+    return ERR;
+  }
 
   table = (int*) malloc((N*n_times)*sizeof(int));
+  if(!table){
+    free_dictionary(dictionary);
+    free(perm);
+    return ERR;
+  }
 
-  massive_insertion_dictionary(dictionary, perm, N);
+  if(massive_insertion_dictionary(dictionary, perm, N)==ERR){
+    free_dictionary(dictionary);
+    free(perm);
+    free(table);
+    return ERR;
+  }
 
   generator(table, N*n_times, N);
 
   start=clock();
+  if(start == ERR){
+    free_dictionary(dictionary);
+    free(perm);
+    free(table);
+    return ERR;
+  }
+
   min_ob=INT_MAX;
   max_ob=0;
-  for(i=0; i<n_times; i++){
+
+  for(i=0; i<(N*n_times); i++){
     search=search_dictionary(dictionary, table[i], &pos, method);
+    if(search==ERR){
+      free_dictionary(dictionary);
+      free(perm);
+      free(table);
+      return ERR;
+    }
+
     if(search<min_ob) min_ob=search;
     else if(search>max_ob) max_ob=search;
     ob+=search;
   }
 
   end=clock();
+  if(end == ERR){
+    free_dictionary(dictionary);
+    free(perm);
+    free(table);
+    return ERR;
+  }
 
+  ptime->n_elems=(N*n_times);
+  ptime->N=N;
   ptime->max_ob = max_ob;
   ptime->min_ob = min_ob;
-  ptime->average_ob=(double) ob/ptime->n_elems;
-  ptime->time = (double) (end-start)/N/n_times/CLOCKS_PER_SEC;
+  ptime->average_ob=(double) (ob/ptime->n_elems);
+  ptime->time = (double) (end-start)/(n_times*N)/CLOCKS_PER_SEC;
 
   free_dictionary(dictionary);
   free(perm);
@@ -83,6 +119,7 @@ short generate_search_times(pfunc_search method, pfunc_key_generator generator, 
 
   aux=(num_max-num_min)/incr+1;
   time=(TIME_AA*)malloc((aux)*sizeof(TIME_AA));
+  if(!time) return ERR;
 
   for(i=0,t=num_min;i<aux;i++,t+=incr){
     if(average_search_time(method, generator, order, t, n_times, &time[i])==ERR){
@@ -102,6 +139,10 @@ short generate_search_times(pfunc_search method, pfunc_key_generator generator, 
 short save_time_table(char* file, PTIME_AA time, int N){
 FILE *f=NULL;
   int i;
+
+  if(!file || !time) return ERR;
+
+  assert(N >= 0);
 
   f=fopen(file,"w");
   if(!f){
